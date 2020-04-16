@@ -6,6 +6,7 @@ export default class godPiece
 		this.d = d;
 		this.x = x;
 		this.y = y;
+		this.pts = 100;
 		this.name = "GodPiece";
 	}
 	
