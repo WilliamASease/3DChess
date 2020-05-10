@@ -1,4 +1,5 @@
 import godPiece from "./pieces/godPiece.js";
+import king from "./pieces/king.js";
 var canv = document.getElementById("canvas");
 var paint = canv.getContext("2d");
 paint.font = "60px Gothic";
@@ -9,7 +10,9 @@ var bSize = 160;
 var sqSize = bSize / 5;
 
 var whiteType = 0;
+var whiteKing;
 var blackType = 0;
+var blackKing;
 //0 = human player.
 //1 = Carl, the smoking monkey.
 //2 = Leonard.
@@ -48,6 +51,12 @@ function onClick(evt)
 	if (!clickable) return;
 	var arr = xyToElem(evt.clientX, evt.clientY) //Add functionality to this to create new types of clicks.
 	if (arr == null) return;
+	if (arr == "drop" && (gameState == 2 || gameState == 4))
+	{
+		gameState--;
+		gameStateProcess();
+		return;
+	}
 	if (arr.length == 3) processBoardClick(arr); //Valid board click.
 }
 
@@ -94,13 +103,13 @@ function drawGameState()
 			paint.fillText("White select piece.", 200, 850);
 			break;
 		case 2:
-			paint.fillText("White select dest.", 200, 850);
+			paint.fillText("White select dest. [Drop]", 200, 850);
 			break;
 		case 3:
 			paint.fillText("Black select piece.", 200, 850);
 			break;
 		case 4:
-			paint.fillText("Black select dest.", 200, 850);
+			paint.fillText("Black select dest. [Drop]", 200, 850);
 			break;
 		case 5:
 			paint.fillText("White wins!", 200, 850);
@@ -190,55 +199,58 @@ function initBoard()
 				d[i][j][l] = null;
 			}
 	
-	d[0][0][0] = new godPiece(1,0,0,0);
-	d[0][1][0] = new godPiece(1,0,1,0);
-	d[0][2][0] = new godPiece(1,0,2,0);
-	d[0][3][0] = new godPiece(1,0,3,0);
-	d[0][4][0] = new godPiece(1,0,4,0);
+	//d[0][0][0] = new godPiece(1,0,0,0);
+	//d[0][1][0] = new godPiece(1,0,1,0);
+	d[0][2][0] = new king(1,0,2,0); whiteKing = d[0][2][0];
+	//d[0][3][0] = new godPiece(1,0,3,0);
+	//d[0][4][0] = new godPiece(1,0,4,0);
 	d[0][0][1] = new godPiece(1,0,0,1);
 	d[0][1][1] = new godPiece(1,0,1,1);
 	d[0][2][1] = new godPiece(1,0,2,1);
 	d[0][3][1] = new godPiece(1,0,3,1);
 	d[0][4][1] = new godPiece(1,0,4,1);
-	d[1][0][0] = new godPiece(1,1,0,0);
-	d[1][1][0] = new godPiece(1,1,1,0);
-	d[1][2][0] = new godPiece(1,1,2,0);
-	d[1][3][0] = new godPiece(1,1,3,0);
-	d[1][4][0] = new godPiece(1,1,4,0);
-	d[1][0][1] = new godPiece(1,1,0,1);
-	d[1][1][1] = new godPiece(1,1,1,1);
-	d[1][2][1] = new godPiece(1,1,2,1);
-	d[1][3][1] = new godPiece(1,1,3,1);
-	d[1][4][1] = new godPiece(1,1,4,1);
+	//d[1][0][0] = new godPiece(1,1,0,0);
+	//d[1][1][0] = new godPiece(1,1,1,0);
+	//d[1][2][0] = new godPiece(1,1,2,0);
+	//d[1][3][0] = new godPiece(1,1,3,0);
+	//d[1][4][0] = new godPiece(1,1,4,0);
+	//d[1][0][1] = new godPiece(1,1,0,1);
+	//d[1][1][1] = new godPiece(1,1,1,1);
+	//d[1][2][1] = new godPiece(1,1,2,1);
+	//d[1][3][1] = new godPiece(1,1,3,1);
+	//d[1][4][1] = new godPiece(1,1,4,1);
 	
-	d[4][0][4] = new godPiece(2,4,0,4);
-	d[4][1][4] = new godPiece(2,4,1,4);
-	d[4][2][4] = new godPiece(2,4,2,4);
-	d[4][3][4] = new godPiece(2,4,3,4);
-	d[4][4][4] = new godPiece(2,4,4,4);
+	//d[4][0][4] = new godPiece(2,4,0,4);
+	//d[4][1][4] = new godPiece(2,4,1,4);
+	d[4][2][4] = new king(2,4,2,4); blackKing = d[0][2][0];
+	//d[4][3][4] = new godPiece(2,4,3,4);
+	//d[4][4][4] = new godPiece(2,4,4,4);
 	d[4][0][3] = new godPiece(2,4,0,3);
 	d[4][1][3] = new godPiece(2,4,1,3);
 	d[4][2][3] = new godPiece(2,4,2,3);
 	d[4][3][3] = new godPiece(2,4,3,3);
 	d[4][4][3] = new godPiece(2,4,4,3);
-	d[3][0][4] = new godPiece(2,3,0,4);
-	d[3][1][4] = new godPiece(2,3,1,4);
-	d[3][2][4] = new godPiece(2,3,2,4);
-	d[3][3][4] = new godPiece(2,3,3,4);
-	d[3][4][4] = new godPiece(2,3,4,4);
-	d[3][0][3] = new godPiece(2,3,0,3);
-	d[3][1][3] = new godPiece(2,3,1,3);
-	d[3][2][3] = new godPiece(2,3,2,3);
-	d[3][3][3] = new godPiece(2,3,3,3);
-	d[3][4][3] = new godPiece(2,3,4,3);
+	//d[3][0][4] = new godPiece(2,3,0,4);
+	//d[3][1][4] = new godPiece(2,3,1,4);
+	//d[3][2][4] = new godPiece(2,3,2,4);
+	//d[3][3][4] = new godPiece(2,3,3,4);
+	//d[3][4][4] = new godPiece(2,3,4,4);
+	//d[3][0][3] = new godPiece(2,3,0,3);
+	//d[3][1][3] = new godPiece(2,3,1,3);
+	//d[3][2][3] = new godPiece(2,3,2,3);
+	//d[3][3][3] = new godPiece(2,3,3,3);
+	//d[3][4][3] = new godPiece(2,3,4,3);
 	return d;
 }
 
 function xyToElem(x, y)
 {
+	x = x + window.pageXOffset;
+	y = y + window.pageYOffset;
+	if (x > 575 && x < 525 + 200 && y > 815 && y < 815 + 50) return "drop";
 	var d = Math.floor(x/180);
-	x = Math.floor((x + window.pageXOffset - d * 180 - 10)/sqSize);
-	y = Math.floor((y + window.pageYOffset - 130 - d * 150)/sqSize);
+	x = Math.floor((x - d * 180 - 10)/sqSize);
+	y = Math.floor((y - 130 - d * 150)/sqSize);
 	if (d < 0 || d > 4 || x < 0 || x > 4 || y < 0 || y > 4) return null;
 	return [d, x, y];
 }
@@ -271,11 +283,11 @@ function processBoardClick(arr)
 		pieceInHand = temp;
 		gameState++;
 		redraw();
-		paintValid(temp.getValid());
+		paintValid(temp.getValid(board));
 		temp = null;
 		return;
 	}
-	if ((gameState == 2 || gameState == 4) && pieceInHand.valid(arr[0],arr[1],arr[2]))
+	if ((gameState == 2 || gameState == 4) && pieceInHand.valid(arr[0],arr[1],arr[2], board))
 	{
 		board[pieceInHand.d][pieceInHand.x][pieceInHand.y] = null;
 		pieceInHand.move(arr[0],arr[1],arr[2]);

@@ -6,23 +6,13 @@ export default class godPiece
 		this.d = d;
 		this.x = x;
 		this.y = y;
-		this.pts = 100;
-		this.name = "GodPiece";
+		this.pts = 0;
+		this.name = "King";
 	}
 	
 	getValid(board)
 	{
-		var i, j, k, t= 0;
 		var out = [];
-		for (i = 0; i < 5; i++)
-			for (j = 0; j < 5; j++)
-				for (k = 0; k < 5; k++)
-				{
-					out[t] = i;
-					out[t + 1] = j;
-					out[t + 2] = k;
-					t += 3; 
-				}
 		return out;
 	}
 	
