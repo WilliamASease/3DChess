@@ -8,13 +8,9 @@ paint.fillText("Ferdinand Maack 1907 / William Sease 2020", 10, 95);
 var bSize = 160;
 var sqSize = bSize / 5;
 
-var aiPlayer = 0;
-//0 = none;
-//1 = White;
-//2 = Black;
-//3 = Two ai players.
-var difficulty = 0;
-//0 = Two human players.
+var whiteType = 0;
+var blackType = 0;
+//0 = human player.
 //1 = Carl, the smoking monkey.
 //2 = Leonard.
 //3 = Rhonda.
@@ -22,33 +18,36 @@ var difficulty = 0;
 //5 = Jill.
 //6 = Master Cordon.
 //7 = Dr. Premonition.
-var gameState = 1; 
-//0 = no game. 
+var gameState = 0;
+var clickable = 0;
+var pieceInHand = null;
+//0 = no game.
 //1 = white select piece. 
-//2 = white select dest. 
+//2 = white select dest.
 //3 = black select piece. 
 //4 = black select dest.
-//5 = white AI turn.
-//6 = black AI turn.
-//7 = Game over.
+//5 = white wins.
+//6 = black wins.
+//7 = draw.
 
 
 addEventListener("click", function(e) { onClick(e)});
 let board = initBoard();
 redraw();
+gameStateProcess();
 
 function redraw()
 {
 	simpleBoards(10, 130);
 	plotAllPieces();
-	drawScore();
+	drawGameState();
 }
 
 function onClick(evt)
 {
-	if (gameState < 1 || gameState > 4) return;
-	var arr = xyToElem(evt.clientX, evt.clientY)
-	if (arr == null) return; //Click totally invalid.
+	if (!clickable) return;
+	var arr = xyToElem(evt.clientX, evt.clientY) //Add functionality to this to create new types of clicks.
+	if (arr == null) return;
 	if (arr.length == 3) processBoardClick(arr); //Valid board click.
 }
 
@@ -80,12 +79,39 @@ function simpleBoard(x, y)
 	paint.fillStyle = "black";	
 }
 
-function drawScore()
+function drawGameState()
 {
 	paint.fillStyle = "white";
-	paint.fillRect(300,850,400,100);
+	paint.fillRect(200,750,500,300);
 	paint.font = "50px Gothic";
 	paint.fillStyle = "black";
+	switch (gameState)
+	{
+		case 0:
+			paint.fillText("No game.", 200, 850);
+			break;
+		case 1:
+			paint.fillText("White select piece.", 200, 850);
+			break;
+		case 2:
+			paint.fillText("White select dest.", 200, 850);
+			break;
+		case 3:
+			paint.fillText("Black select piece.", 200, 850);
+			break;
+		case 4:
+			paint.fillText("Black select dest.", 200, 850);
+			break;
+		case 5:
+			paint.fillText("White wins!", 200, 850);
+			break;
+		case 6:
+			paint.fillText("Black wins!", 200, 850);
+			break;
+		case 7:
+			paint.fillText("Draw!", 200, 850);
+			break;
+	}
 	paint.fillText("Whi " + getPts(1), 200, 900);
 	paint.fillText("Bla " + getPts(2), 450, 900);
 }
@@ -124,7 +150,8 @@ function plotPiece(x)
 {
 	paint.font = "20px Gothic";
 	if(x.color == 1) paint.fillStyle = "white";
-	else paint.fillStyle = "grey"
+	else if(x.color == 2) paint.fillStyle = "grey";
+	else paint.fillStyle = "red";
 	plot(x.d, x.x, x.y, sqSize/2, sqSize/4, sqSize/4);
 	paint.fillStyle = "black";
 	paint.fillText(x.name.charAt(0),
@@ -231,8 +258,87 @@ function processBoardClick(arr)
 	if (arr[1] == 4) txt += "e";
 	txt+=arr[2] + 1;
 	paint.fillStyle = "white";
-	paint.fillRect(0,800,200,100);
+	paint.fillRect(0,750,200,150);
 	paint.font = "100px Gothic";
 	paint.fillStyle = "black";
 	paint.fillText(txt, 0, 900);
+	paint.font = "50px Gothic";
+	var temp = boardGet(arr);
+	if (temp != null) paint.fillText(temp.name, 0, 800);
+	console.log("yo " + gameState);
+	if ((temp != null) && (gameState == 1 && temp.color == 1) || (gameState == 3 && temp.color == 2))
+	{
+		pieceInHand = temp;
+		gameState++;
+		redraw();
+		paintValid(temp.getValid());
+		temp = null;
+		return;
+	}
+	if ((gameState == 2 || gameState == 4) && pieceInHand.valid(arr[0],arr[1],arr[2]))
+	{
+		board[pieceInHand.d][pieceInHand.x][pieceInHand.y] = null;
+		pieceInHand.move(arr[0],arr[1],arr[2]);
+		board[arr[0]][arr[1]][arr[2]] = pieceInHand;
+		if (gameState == 2) gameState = 3;
+		if (gameState == 4) gameState = 1;
+		checkGameOver();
+		gameStateProcess();
+	}
 }
+
+function boardGet(arr)
+{
+	return board[arr[0]][arr[1]][arr[2]];
+}
+
+function gameStateProcess()
+{
+	var advance = false;
+	switch (gameState)
+	{
+		case 0:
+			gameState = 1;
+			advance = true;
+			break;
+		case 1:
+			clickable = false;
+			if (whiteType > 0)
+			{
+				AIthink(1, whiteType);
+				gameState = 3;
+				advance = true;
+			}
+			clickable = true;
+			break;
+		case 3:
+			clickable = false;
+			if (blackType > 0)
+			{
+				AIthink(2, blackType);
+				gameState = 1;
+				advance = true;
+			}
+			clickable = true;
+			break;
+	}
+	checkGameOver();
+	redraw();
+	if (advance) gameStateProcess();
+}
+
+function AIthink(t, diff)
+{
+}
+
+function checkGameOver()
+{
+}
+
+
+
+
+
+
+
+
