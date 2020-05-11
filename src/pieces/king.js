@@ -1,12 +1,12 @@
-export default class godPiece
+export default class king
 {
 	constructor(color, d, x, y) 
 	{
-		this.color = color; //White = 1 Black = 2
+		this.color = color;
 		this.d = d;
 		this.x = x;
 		this.y = y;
-		this.pts = 0;
+		this.pts = 1000;
 		this.name = "King";
 	}
 	
@@ -36,5 +36,10 @@ export default class godPiece
 			}
 		}
 		return false;
+	}
+	
+	deepCopy()
+	{
+		return new king(this.color, this.d, this.x, this.y);
 	}
 }

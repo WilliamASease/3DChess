@@ -12,23 +12,20 @@ export default class godPiece
 	
 	getValid(board)
 	{
-		var i, j, k, t= 0;
+		var i, j, l;
 		var out = [];
-		for (i = 0; i < 5; i++)
-			for (j = 0; j < 5; j++)
-				for (k = 0; k < 5; k++)
-				{
-					out[t] = i;
-					out[t + 1] = j;
-					out[t + 2] = k;
-					t += 3; 
-				}
+		for (i = this.d - 1; i < this.d + 2; i++)
+			for (j = this.x - 1; j < this.x + 2; j++)
+				for (l = this.y - 1; l < this.y + 2; l++)
+					if (i >= 0 && i < 5 && j >= 0 && j < 5 && l >= 0 && l < 5)
+						if (board[i][j][l] == null || board[i][j][l].color != this.color)
+							out.push(i, j, l);
 		return out;
 	}
 	
-	move(d, x, y)
+	move(d, x, y, board)
 	{
-		if (!this.valid(d, x, y)) return;
+		if (!this.valid(d, x, y, board)) return;
 		this.d = d;
 		this.x = x;
 		this.y = y;
@@ -46,5 +43,10 @@ export default class godPiece
 			}
 		}
 		return false;
+	}
+	
+	deepCopy()
+	{
+		return new godPiece(this.color, this.d, this.x, this.y);
 	}
 }
